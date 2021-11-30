@@ -1,22 +1,14 @@
 import React from 'react';
-import { StyleSheet, Button, View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Text } from 'react-native-elements';
 
-export default function CreateNoteScreen({ navigation }) {
+export default function CreateNoteScreen({ route }) {
+  const { item } = route.params;
   return (
-    <View style={styles.container}>
-      <Text>Create note screen</Text>
-      <Button
-        title="Go to saved notes"
-        onPress={() => navigation.navigate('Saved')}
-      />
+    <View>
+      <Text>Form goes here</Text>
+      <Text>Beer id: {item.id}</Text>
+      <Text>Beer name: {item.name}</Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

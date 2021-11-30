@@ -7,7 +7,7 @@ export default function SavedNotes({ navigation }) {
       <Text>Saved notes</Text>
       <Button
         title="Create note"
-        onPress={() => navigation.navigate('CreateNote')}
+        onPress={() => navigation.navigate('SelectBeer')}
       />
     </View>
   );
