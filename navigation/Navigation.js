@@ -1,18 +1,24 @@
 import React from 'react';
-import { Button, View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from '../screens/HomeScreen';
 import CreateNoteScreen from '../screens/CreateNoteScreen';
 import SavedNotes from '../screens/SavedNotes';
+import { navigationRef } from './RootNavigation';
+import SelectBeerScreen from '../screens/SelectBeerScreen';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
 export default function Navigation() {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Navigator initialRouteName="Home">
         <Screen name="Home" component={HomeScreen} />
+        <Screen
+          name="SelectBeer"
+          component={SelectBeerScreen}
+          options={{ title: 'Select beer' }}
+        />
         <Screen
           name="CreateNote"
           component={CreateNoteScreen}
