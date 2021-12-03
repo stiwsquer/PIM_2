@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Text, Input, FAB } from 'react-native-elements';
 import StarRating from 'react-native-star-rating-widget';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,12 +18,27 @@ export default function CreateNoteScreen({ route, navigation }) {
   }
 
   const saveNote = async () => {
-    try {
-      await AsyncStorage.setItem(item.id, JSON.stringify(note)).then(() => navigation.navigate("Saved"))
 
-    } catch (e) {
-      // handle error
-    }    
+    if (desc === "") {
+      Alert.alert(
+        "Warning",
+        "Description cannot be empty!")
+    }
+
+    else if (rating === 0) {
+      Alert.alert(
+        "Warning",
+        "Rating cannot be 0!")
+    }
+
+    else {
+      try {
+        await AsyncStorage.setItem(item.id, JSON.stringify(note)).then(() => navigation.navigate("Saved"))
+  
+      } catch (e) {
+        // handle error
+      }    
+    }
   }
 
   return (
