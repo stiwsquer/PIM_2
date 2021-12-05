@@ -6,6 +6,7 @@ import CreateNoteScreen from '../screens/CreateNoteScreen';
 import SavedNotes from '../screens/SavedNotes';
 import { navigationRef } from './RootNavigation';
 import SelectBeerScreen from '../screens/SelectBeerScreen';
+import NoteDetails from '../screens/NoteDetails';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -28,6 +29,11 @@ export default function Navigation() {
           name="Saved"
           component={SavedNotes}
           options={{ title: 'Saved notes' }}
+        />
+        <Screen
+          name="Details"
+          component={NoteDetails}
+          options={{ title: 'Details of note' }}
         />
       </Navigator>
     </NavigationContainer>
