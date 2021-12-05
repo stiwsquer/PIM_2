@@ -1,44 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { Text, Input, FAB } from 'react-native-elements';
 import StarRating from 'react-native-star-rating-widget';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import Constants from 'expo-constants';
+import * as Location from 'expo-location';
+
 export default function CreateNoteScreen({ route, navigation }) {
   const [rating, setRating] = useState(0);
-  const [desc, setDesc] = useState(''); 
-  
+  const [desc, setDesc] = useState('');
+  const [location, setLocation] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
+
   const { item } = route.params;
 
   let note = {
     beerID: item.id,
     beerName: item.name,
     beerRating: rating,
-    beerDescription: desc
-  }
+    beerDescription: desc,
+    beerLocation: location,
+  };
 
   const saveNote = async () => {
-
-    if (desc === "") {
-      Alert.alert(
-        "Warning",
-        "Description cannot be empty!")
-    }
-
-    else if (rating === 0) {
-      Alert.alert(
-        "Warning",
-        "Rating cannot be 0!")
-    }
-
-    else {
+    if (desc === '') {
+      Alert.alert('Warning', 'Description cannot be empty!');
+    } else if (rating === 0) {
+      Alert.alert('Warning', 'Rating cannot be 0!');
+    } else {
       try {
-        await AsyncStorage.setItem(item.id, JSON.stringify(note)).then(() => navigation.navigate("Saved"))
-  
+        await AsyncStorage.setItem(item.id, JSON.stringify(note)).then(() =>
+          navigation.navigate('Saved')
+        );
       } catch (e) {
         // handle error
-      }    
+      }
     }
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS === 'android' && !Constants.isDevice) {
+        setErrorMsg(
+          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+        );
+        return;
+      }
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({
+        enableHighAccuracy: true,
+        timeOut: 10000,
+        maximumAge: 60,
+      });
+      setLocation(location);
+    })();
+  }, []);
+
+  let text = 'Waiting..';
+  if (errorMsg) {
+    text = errorMsg;
+  } else if (location) {
+    text = JSON.stringify(location);
   }
 
   return (
@@ -54,19 +82,19 @@ export default function CreateNoteScreen({ route, navigation }) {
       />
       <Input
         style={styles.input}
-        placeholder='Add your description'
+        placeholder="Add your description"
         multiline={true}
         maxLength={200}
         blurOnSubmit={true}
         keyboardType="default"
         returnKeyType="done"
-        value ={desc}
-        onChangeText={desc => setDesc(desc)}
+        value={desc}
+        onChangeText={(desc) => setDesc(desc)}
       />
-      <Text style={{fontSize: 20, textAlign: 'center'}}> tutaj geolokacja </Text>
+      <Text style={{ fontSize: 20, textAlign: 'center' }}>{text}</Text>
       <FAB
         style={styles.submitButton}
-        icon={{ name: 'done', color: 'white'}}
+        icon={{ name: 'done', color: 'white' }}
         onPress={() => saveNote()}
       />
     </View>
@@ -76,25 +104,25 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   beerName: {
     textAlign: 'center',
     fontSize: 52,
-    margin: 10
+    margin: 10,
   },
   rateText: {
     fontSize: 32,
   },
   rating: {
-    marginLeft: "auto",
-    marginRight: "auto",
-    paddingBottom: 20
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    paddingBottom: 20,
   },
   input: {
     minHeight: 20,
     maxHeight: 100,
-    paddingTop: 20
+    paddingTop: 20,
   },
   submitButton: {
     position: 'absolute',
@@ -103,4 +131,3 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
-
