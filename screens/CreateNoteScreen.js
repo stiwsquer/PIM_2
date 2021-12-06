@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet, Alert, Dimensions } from 'react-native';
 import { Text, Input, FAB } from 'react-native-elements';
 import StarRating from 'react-native-star-rating-widget';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MapView, {Marker} from 'react-native-maps';
 
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
@@ -63,10 +64,15 @@ export default function CreateNoteScreen({ route, navigation }) {
   }, []);
 
   let text = 'Waiting..';
+  let latitude = 0;
+  let longitude = 0;
   if (errorMsg) {
     text = errorMsg;
   } else if (location) {
+    console.log(location);
     text = JSON.stringify(location);
+    latitude = location.coords.latitude;
+    longitude = location.coords.longitude;
   }
 
   return (
@@ -92,6 +98,22 @@ export default function CreateNoteScreen({ route, navigation }) {
         onChangeText={(desc) => setDesc(desc)}
       />
       <Text style={{ fontSize: 20, textAlign: 'center' }}>{text}</Text>
+      <View style={styles.container2}>
+        <MapView style={styles.map}
+          initialRegion={{
+            latitude: latitude,
+            longitude: longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}>
+             <Marker
+          coordinate={{latitude: latitude, longitude: longitude}}
+          title="this is a marker"
+          description="this is a marker example"
+        />
+          </MapView>
+        
+      </View>
       <FAB
         style={styles.submitButton}
         icon={{ name: 'done', color: 'white' }}
@@ -100,7 +122,16 @@ export default function CreateNoteScreen({ route, navigation }) {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
+  container2: {
+    width: Dimensions.get("window").width - 50,
+    height: Dimensions.get("window").height - 600,
+  },
+  map: {
+    width: Dimensions.get("window").width - 50,
+    height: Dimensions.get("window").height - 600,
+  },
   container: {
     flexGrow: 1,
     display: 'flex',
