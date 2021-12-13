@@ -25,6 +25,7 @@ export default function SavedNotes({ navigation }) {
             beerName: props.title,
             beerRating: props.rating,
             beerDescription: props.desc,
+            beerLocation: props.beerLocation,
           })
         }
       >
@@ -82,6 +83,7 @@ export default function SavedNotes({ navigation }) {
                 rating={item.beerRating}
                 desc={item.beerDescription}
                 beerId={item.beerID}
+                beerLocation={item.beerLocation}
               />
             </View>
           );

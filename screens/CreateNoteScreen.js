@@ -97,7 +97,7 @@ export default function CreateNoteScreen({ route, navigation }) {
         value={desc}
         onChangeText={(desc) => setDesc(desc)}
       />
-      <Text style={{ fontSize: 20, textAlign: 'center' }}>{text}</Text>
+      <Text style={{ fontSize: 20, textAlign: 'center' }}>Lokalizacja</Text>
       <View style={styles.container2}>
         <MapView style={styles.map}
           initialRegion={{

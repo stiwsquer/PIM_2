@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button, Image, View, Text, StyleSheet } from 'react-native';
+import { Button, Image, View, Text, StyleSheet, Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import StarRating from 'react-native-star-rating-widget';
+import MapView, {Marker} from 'react-native-maps';
 
 export default function NoteDetails({ navigation, route }) {
 
@@ -9,7 +10,8 @@ export default function NoteDetails({ navigation, route }) {
     beerID: route.params.beerID,
     beerName: route.params.beerName,
     beerRating: route.params.beerRating,
-    beerDescription: route.params.beerDescription
+    beerDescription: route.params.beerDescription,
+    beerLocation: route.params.beerLocation
   }
 
   const removeNote = async () => {
@@ -20,6 +22,18 @@ export default function NoteDetails({ navigation, route }) {
     }
   };
 
+  let latitude = 0;
+  let longitude = 0;
+  let text;
+  if (route.params.beerLocation) {
+    console.log(route.params.beerLocation);
+    text = JSON.stringify(route.params.beerLocation);
+    latitude = route.params.beerLocation.coords.latitude;
+    longitude = route.params.beerLocation.coords.longitude;
+  } else {
+    
+    console.log("nie ma lokacji");
+  }
   return (
     <View>
       <Button
@@ -49,8 +63,23 @@ export default function NoteDetails({ navigation, route }) {
       </View>
       <View>
         <Text style={styles.desc}>{route.params.beerDescription}</Text>
-        <Text>Lokalizacja</Text>
-
+      </View>
+      <Text style={{ fontSize: 20, textAlign: 'center' }}>Lokalizacja</Text>
+      <View style={styles.container2}>
+        <MapView style={styles.map}
+          initialRegion={{
+            latitude: latitude,
+            longitude: longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}>
+             <Marker
+          coordinate={{latitude: latitude, longitude: longitude}}
+          title="this is a marker"
+          description="this is a marker example"
+        />
+          </MapView>
+        
       </View>
 
     </View>
@@ -59,6 +88,15 @@ export default function NoteDetails({ navigation, route }) {
 
 
 const styles = StyleSheet.create({
+  container2: {
+    alignSelf: 'center',
+    width: Dimensions.get("window").width - 50,
+    height: Dimensions.get("window").height - 600,
+  },
+  map: {
+    width: Dimensions.get("window").width - 50,
+    height: Dimensions.get("window").height - 600,
+  },
   rating: {
     marginLeft: 25,
     marginTop: 35,
