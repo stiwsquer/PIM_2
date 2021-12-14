@@ -1,28 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Alert, Dimensions } from 'react-native';
+import React, { useState, useLayoutEffect } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import { Text, Input, FAB } from 'react-native-elements';
 import StarRating from 'react-native-star-rating-widget';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MapView, {Marker} from 'react-native-maps';
-
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
+import CustomMapView from '../components/CustomMapView';
 
 export default function CreateNoteScreen({ route, navigation }) {
   const [rating, setRating] = useState(0);
   const [desc, setDesc] = useState('');
   const [location, setLocation] = useState(null);
   const [errorMsg, setErrorMsg] = useState(null);
-
   const { item } = route.params;
-
-  let note = {
-    beerID: item.id,
-    beerName: item.name,
-    beerRating: rating,
-    beerDescription: desc,
-    beerLocation: location,
-  };
 
   const saveNote = async () => {
     if (desc === '') {
@@ -31,16 +21,22 @@ export default function CreateNoteScreen({ route, navigation }) {
       Alert.alert('Warning', 'Rating cannot be 0!');
     } else {
       try {
-        await AsyncStorage.setItem(item.id, JSON.stringify(note)).then(() =>
-          navigation.navigate('Saved')
-        );
+        let note = {
+          beerID: item.id,
+          beerName: item.name,
+          beerRating: rating,
+          beerDescription: desc,
+          beerLocation: location,
+        };
+        await AsyncStorage.setItem(item.id, JSON.stringify(note));
+        navigation.navigate('Saved');
       } catch (e) {
-        // handle error
+        console.error(e);
       }
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     (async () => {
       if (Platform.OS === 'android' && !Constants.isDevice) {
         setErrorMsg(
@@ -59,21 +55,10 @@ export default function CreateNoteScreen({ route, navigation }) {
         timeOut: 10000,
         maximumAge: 60,
       });
+      console.log(location);
       setLocation(location);
     })();
   }, []);
-
-  let text = 'Waiting..';
-  let latitude = 0;
-  let longitude = 0;
-  if (errorMsg) {
-    text = errorMsg;
-  } else if (location) {
-    console.log(location);
-    text = JSON.stringify(location);
-    latitude = location.coords.latitude;
-    longitude = location.coords.longitude;
-  }
 
   return (
     <View style={styles.container}>
@@ -97,53 +82,37 @@ export default function CreateNoteScreen({ route, navigation }) {
         value={desc}
         onChangeText={(desc) => setDesc(desc)}
       />
-      <Text style={{ fontSize: 20, textAlign: 'center' }}>Lokalizacja</Text>
-      <View style={styles.container2}>
-        <MapView style={styles.map}
-          initialRegion={{
-            latitude: latitude,
-            longitude: longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}>
-             <Marker
-          coordinate={{latitude: latitude, longitude: longitude}}
-          title="this is a marker"
-          description="this is a marker example"
-        />
-          </MapView>
-        
-      </View>
+      {errorMsg ? (
+        <Text style={{ fontSize: 20, textAlign: 'center' }}>{errorMsg}</Text>
+      ) : null}
+      <CustomMapView location={location} />
       <FAB
         style={styles.submitButton}
         icon={{ name: 'done', color: 'white' }}
         onPress={() => saveNote()}
+        color="#2188DD"
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container2: {
-    width: Dimensions.get("window").width - 50,
-    height: Dimensions.get("window").height - 600,
-  },
-  map: {
-    width: Dimensions.get("window").width - 50,
-    height: Dimensions.get("window").height - 600,
-  },
   container: {
     flexGrow: 1,
     display: 'flex',
     alignItems: 'center',
+    backgroundColor: 'white',
   },
   beerName: {
     textAlign: 'center',
     fontSize: 52,
     margin: 10,
+    color: '#2188DD',
   },
   rateText: {
     fontSize: 32,
+    color: '#2188DD',
+    marginVertical: 10,
   },
   rating: {
     marginLeft: 'auto',

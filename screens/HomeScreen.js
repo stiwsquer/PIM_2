@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, ImageBackground } from 'react-native';
-import { Button, ButtonGroup, Icon } from 'react-native-elements';
+import { Button, Icon } from 'react-native-elements';
 import image from '../static/background4.jpg';
 
 export default function HomeScreen({ navigation }) {
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   title: {
-    color: 'black',
+    color: 'white',
     fontSize: 35,
     marginTop: 60,
     flex: 4,

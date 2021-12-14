@@ -9,6 +9,7 @@ export default function MyListItem({ item }) {
       onPress={() => {
         navigate('CreateNote', { item });
       }}
+      style={styles.card}
     >
       <ListItem key={item.id} bottomDivider style={styles.item}>
         <ListItem.Content style={styles.listContent}>
@@ -20,11 +21,17 @@ export default function MyListItem({ item }) {
 }
 
 const styles = StyleSheet.create({
+  card: {
+    borderWidth: 5,
+    borderColor: '#2188DD',
+    borderRadius: 10,
+    marginBottom: 7,
+    marginHorizontal: 15,
+  },
   listContent: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
   },
-  item: { padding: 10 },
-  itemTitle: { flex: 1, fontSize: 24 },
+  itemTitle: { flex: 1, fontSize: 24, color: '#2188DD' },
 });

@@ -20,7 +20,7 @@ export default function SelectBeerScreen({ navigation }) {
 
     try {
       let res = await fetch(
-        `http://172.24.80.1:3001/beer/${nameString}${pageString}${pageValue}${limitString}${limitValue}`
+        `http://192.168.0.101:3001/beer/${nameString}${pageString}${pageValue}${limitString}${limitValue}`
       );
       res = await res.json();
       setData([...data, ...res.results]);
