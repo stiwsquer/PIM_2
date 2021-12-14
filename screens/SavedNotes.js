@@ -1,55 +1,12 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Button,
-  View,
-  Text,
-  FlatList,
-  Image,
-  TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, View, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/core';
-import StarRating from 'react-native-star-rating-widget';
+import { Button, Icon } from 'react-native-elements';
+import Card from '../components/Card';
 
 export default function SavedNotes({ navigation }) {
   const [notes, setNotes] = useState([]);
-
-  const Card = (props) => {
-    return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() =>
-          navigation.navigate('Details', {
-            beerID: props.beerId,
-            beerName: props.title,
-            beerRating: props.rating,
-            beerDescription: props.desc,
-            beerLocation: props.beerLocation,
-          })
-        }
-      >
-        <View>
-          <Image
-            style={styles.image}
-            source={{
-              uri: 'https://engineering.fb.com/wp-content/uploads/2016/04/yearinreview.jpg',
-            }}
-          />
-        </View>
-        <View style={styles.box}>
-          <Text style={styles.title}>{props.title}</Text>
-          <StarRating
-            style={styles.rating}
-            rating={props.rating}
-            enableSwiping="false"
-            disabled="true"
-            onChange={() => {}}
-          />
-        </View>
-      </TouchableOpacity>
-    );
-  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -64,21 +21,20 @@ export default function SavedNotes({ navigation }) {
       const notesList = notes.map((elem) => JSON.parse(elem[1]));
       setNotes(notesList);
     } catch (e) {
-      // Handle error
+      console.error(e);
     }
   };
 
   return (
     <View style={styles.container}>
       <FlatList
-        style={({ height: '100%' }, { width: '100%' })}
+        style={({ minHeight: '100%' }, { width: '100%' })}
         data={notes.reverse()}
         keyExtractor={(item) => item.beerID}
         renderItem={({ item }) => {
           return (
             <View>
               <Card
-                style={styles.card}
                 title={item.beerName}
                 rating={item.beerRating}
                 desc={item.beerDescription}
@@ -89,14 +45,33 @@ export default function SavedNotes({ navigation }) {
           );
         }}
       />
-      <Button
-        title="DELETE ALL NODES (DEV)"
-        onPress={() => AsyncStorage.clear().then(() => readNotes())}
-      />
-      <Button
-        title="Create note"
-        onPress={() => navigation.navigate('SelectBeer')}
-      />
+      <View style={styles.buttons}>
+        <Button
+          icon={<Icon name="delete" size={60} color="#2188DD" />}
+          type="clear"
+          onPress={() => {
+            Alert.alert(
+              'Warning',
+              'Are you sure you want to delete all notes?',
+              [
+                {
+                  text: 'Cancel',
+                  onPress: () => {},
+                },
+                {
+                  text: 'OK',
+                  onPress: () => AsyncStorage.clear().then(() => readNotes()),
+                },
+              ]
+            );
+          }}
+        />
+        <Button
+          icon={<Icon name="add" size={60} color="#2188DD" />}
+          type="clear"
+          onPress={() => navigation.navigate('SelectBeer')}
+        />
+      </View>
     </View>
   );
 }
@@ -105,36 +80,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 10,
+    position: 'relative',
   },
-  card: {
-    flex: 1,
-    borderColor: 'black',
-    borderWidth: 2,
-    margin: 5,
-    borderRadius: 8,
-    overflow: 'hidden',
+  buttons: {
+    position: 'absolute',
+    display: 'flex',
     flexDirection: 'row',
-  },
-  image: {
-    width: 125,
-    height: 150,
-    margin: 10,
-    resizeMode: 'stretch',
-  },
-  rating: {
-    marginRight: 10,
-    marginBottom: 10,
-    alignSelf: 'flex-end',
-    flex: 3,
-  },
-  title: {
-    flex: 2,
-    margin: 30,
-    fontSize: 24,
-  },
-  box: {
-    flex: 2,
-    flexDirection: 'column',
-    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,200,0,0.4)',
+    borderRadius: 20,
+    margin: 1,
+    padding: 10,
+    bottom: 5,
   },
 });
